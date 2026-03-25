@@ -107,6 +107,14 @@ extern "C" {
 	CHARDET_API void detect_destroy (Detect **);
 	CHARDET_API short detect (const char *, DetectObj **);
 	CHARDET_API short detect_r (const char *, size_t, DetectObj **);
+
+	/* GreenPad-compatible chardet_* API */
+	CHARDET_API int chardet_create (void **);
+	CHARDET_API void chardet_destroy (void *);
+	CHARDET_API int chardet_handle_data (void *, const char *, unsigned int);
+	CHARDET_API int chardet_data_end (void *);
+	CHARDET_API int chardet_get_charset (void *, char *, unsigned int);
+	CHARDET_API int chardet_reset (void *);
 #ifdef __cplusplus
 };
 #endif

@@ -165,6 +165,62 @@ CHARDET_API short detect_r (const char *buf, size_t buflen, DetectObj ** obj) {
 	return CHARDET_SUCCESS;
 }
 
+/* GreenPad-compatible chardet_* API
+ * Maps chardet_create/destroy/handle_data/data_end/get_charset/reset
+ * onto the Detector class defined above.
+ */
+
+#define CHARDET_COMPAT_OK               ( 0)
+#define CHARDET_COMPAT_NOMEMORY         (-1)
+#define CHARDET_COMPAT_INVALID_DETECTOR (-2)
+#define CHARDET_COMPAT_NO_RESULT        (-3)
+
+CHARDET_API int chardet_create (void **ppdet) {
+	if ( !ppdet ) return CHARDET_COMPAT_INVALID_DETECTOR;
+	Detector *det = new Detector;
+	if ( !det ) return CHARDET_COMPAT_NOMEMORY;
+	det->Reset ();
+	*ppdet = det;
+	return CHARDET_COMPAT_OK;
+}
+
+CHARDET_API void chardet_destroy (void *pdet) {
+	if ( pdet ) delete static_cast<Detector *>(pdet);
+}
+
+CHARDET_API int chardet_handle_data (void *pdet, const char *data, unsigned int length) {
+	if ( !pdet ) return CHARDET_COMPAT_INVALID_DETECTOR;
+	Detector *det = static_cast<Detector *>(pdet);
+	if ( det->HandleData (data, length) == NS_ERROR_OUT_OF_MEMORY )
+		return CHARDET_COMPAT_NOMEMORY;
+	return CHARDET_COMPAT_OK;
+}
+
+CHARDET_API int chardet_data_end (void *pdet) {
+	if ( !pdet ) return CHARDET_COMPAT_INVALID_DETECTOR;
+	static_cast<Detector *>(pdet)->DataEnd ();
+	return CHARDET_COMPAT_OK;
+}
+
+CHARDET_API int chardet_get_charset (void *pdet, char *charset, unsigned int maxlen) {
+	const char *name;
+	size_t namelen, copylen;
+	if ( !pdet || !charset || maxlen == 0 ) return CHARDET_COMPAT_INVALID_DETECTOR;
+	name = static_cast<Detector *>(pdet)->getCharsetName ();
+	if ( !name ) return CHARDET_COMPAT_NO_RESULT;
+	namelen = strlen (name);
+	copylen = (namelen < (size_t)(maxlen - 1)) ? namelen : (size_t)(maxlen - 1);
+	memcpy (charset, name, copylen);
+	charset[copylen] = '\0';
+	return CHARDET_COMPAT_OK;
+}
+
+CHARDET_API int chardet_reset (void *pdet) {
+	if ( !pdet ) return CHARDET_COMPAT_INVALID_DETECTOR;
+	static_cast<Detector *>(pdet)->Reset ();
+	return CHARDET_COMPAT_OK;
+}
+
 /*
  * Local variables:
  * tab-width: 4

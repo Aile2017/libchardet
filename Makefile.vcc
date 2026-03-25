@@ -1,0 +1,70 @@
+# MSVC x64 Makefile for chardet.dll
+# Usage: nmake -f Makefile.vcc
+
+CC   = cl.exe
+LINK = link.exe
+
+OUTDIR = build\vcc
+TARGET = chardet.dll
+
+CFLAGS = /nologo /O2 /W3 /EHsc /utf-8 \
+         /DHAVE_DLL_EXPORT \
+         /I"include" /I"src" \
+         /Fo"$(OUTDIR)\\" /c
+
+OBJS = \
+    $(OUTDIR)\CharDistribution.obj \
+    $(OUTDIR)\JpCntx.obj \
+    $(OUTDIR)\chardet.obj \
+    $(OUTDIR)\nsBig5Prober.obj \
+    $(OUTDIR)\nsCharSetProber.obj \
+    $(OUTDIR)\nsEUCJPProber.obj \
+    $(OUTDIR)\nsEUCKRProber.obj \
+    $(OUTDIR)\nsEUCTWProber.obj \
+    $(OUTDIR)\nsEscCharsetProber.obj \
+    $(OUTDIR)\nsEscSM.obj \
+    $(OUTDIR)\nsGB2312Prober.obj \
+    $(OUTDIR)\nsHebrewProber.obj \
+    $(OUTDIR)\nsLatin1Prober.obj \
+    $(OUTDIR)\nsMBCSGroupProber.obj \
+    $(OUTDIR)\nsMBCSSM.obj \
+    $(OUTDIR)\nsSBCSGroupProber.obj \
+    $(OUTDIR)\nsSBCharSetProber.obj \
+    $(OUTDIR)\nsSJISProber.obj \
+    $(OUTDIR)\nsUTF8Prober.obj \
+    $(OUTDIR)\nsUniversalDetector.obj \
+    $(OUTDIR)\LangArabicModel.obj \
+    $(OUTDIR)\LangBulgarianModel.obj \
+    $(OUTDIR)\LangCyrillicModel.obj \
+    $(OUTDIR)\LangDanishModel.obj \
+    $(OUTDIR)\LangEsperantoModel.obj \
+    $(OUTDIR)\LangFrenchModel.obj \
+    $(OUTDIR)\LangGermanModel.obj \
+    $(OUTDIR)\LangGreekModel.obj \
+    $(OUTDIR)\LangHebrewModel.obj \
+    $(OUTDIR)\LangHungarianModel.obj \
+    $(OUTDIR)\LangSpanishModel.obj \
+    $(OUTDIR)\LangThaiModel.obj \
+    $(OUTDIR)\LangTurkishModel.obj \
+    $(OUTDIR)\LangVietnameseModel.obj
+
+all: $(OUTDIR) $(OUTDIR)\$(TARGET)
+
+$(OUTDIR):
+	if not exist $(OUTDIR) mkdir $(OUTDIR)
+
+$(OUTDIR)\$(TARGET): $(OBJS)
+	$(LINK) /nologo /DLL \
+	    /OUT:"$(OUTDIR)\$(TARGET)" \
+	    /IMPLIB:"$(OUTDIR)\chardet.lib" \
+	    $(OBJS) \
+	    kernel32.lib
+
+{src\}.cpp{$(OUTDIR)\}.obj:
+	$(CC) $(CFLAGS) $<
+
+{src\tables\}.cpp{$(OUTDIR)\}.obj:
+	$(CC) $(CFLAGS) $<
+
+clean:
+	if exist $(OUTDIR) rmdir /s /q $(OUTDIR)

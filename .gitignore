@@ -15,3 +15,11 @@ chardet-config.h
 libtool
 stamp-h1
 tags
+
+# Local build directories (MSVC/CMake)
+build/
+build2/
+build_*/
+
+# Claude Code
+.claude/
