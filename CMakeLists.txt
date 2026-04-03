@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(chardet VERSION 1.0.6 LANGUAGES CXX)
+project(chardet VERSION 1.0.7 LANGUAGES CXX)
 
 set(SOURCES
     src/chardet.cpp
