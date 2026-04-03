@@ -26,3 +26,6 @@ build_*/
 
 # Release package output
 release_package/
+
+# Local instructions
+.github/copilot-instructions.md
